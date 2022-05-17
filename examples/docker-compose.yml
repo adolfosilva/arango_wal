@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  arango:
+    image: arangodb/arangodb:3.9.0-noavx
+    ports:
+      - 8529:8529
+    environment:
+      - ARANGO_ROOT_PASSWORD=supersecretpassword
