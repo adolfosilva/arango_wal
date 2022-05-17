@@ -116,6 +116,6 @@ class ArangoWAL(EventEmitter):
         collection = data["_id"].split("/")[0] if data else None
         return collection, operation, data
 
-    def _exit_gracefully(self, _args):
+    def _exit_gracefully(self, _signum, _stackframe):
         self.stop()
         sys.exit(0)
