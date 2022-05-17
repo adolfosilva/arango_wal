@@ -15,7 +15,8 @@ from typing import Callable
 
 from arango import ArangoClient
 from arango.database import StandardDatabase
-from pyee.base import EventEmitter, Handler
+from pyee import AsyncIOEventEmitter
+from pyee.base import Handler
 
 __version__ = "0.1.0"
 __all__ = ["ArangoWAL", "OPERATIONS", "POLLING_INTERVAL_SECS"]
@@ -43,10 +44,12 @@ OPERATIONS = {
 }
 
 
-class ArangoWAL(EventEmitter):
+class ArangoWAL(AsyncIOEventEmitter):
     """ArangoWAL allows subscribing to ArangoDB WAL events."""
 
-    def __init__(self, host: str, polling_interval: int = POLLING_INTERVAL_SECS):
+    def __init__(
+        self, host: str, polling_interval: int = POLLING_INTERVAL_SECS, event_loop=None
+    ):
         self.polling_interval = polling_interval
         self.logger = logging.getLogger(__name__)
         self._client = ArangoClient(host)
@@ -55,7 +58,7 @@ class ArangoWAL(EventEmitter):
         self._wal = None
         signal.signal(signal.SIGINT, self._exit_gracefully)
         signal.signal(signal.SIGTERM, self._exit_gracefully)
-        super().__init__()
+        super().__init__(loop=event_loop)
 
     def connect(self, **kwargs) -> StandardDatabase:
         """Connect to an ArangoDB database."""
@@ -116,6 +119,6 @@ class ArangoWAL(EventEmitter):
         collection = data["_id"].split("/")[0] if data else None
         return collection, operation, data
 
-    def _exit_gracefully(self, _args):
+    def _exit_gracefully(self, _signum, _stackframe):
         self.stop()
         sys.exit(0)
