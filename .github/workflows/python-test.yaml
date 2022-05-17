@@ -23,5 +23,11 @@ jobs:
           poetry-version: ${{ matrix.poetry-version }}
       - name: Install dependencies
         run: poetry install
+      - name: Run black
+        run: poetry run black --check .
+      - name: Run isort
+        run: poetry run isort --check-only .
+      - name: Run pylint
+        run: poetry run pylint -j 0 arango_wal
       - name: Run test suite
         run: poetry run pytest 
