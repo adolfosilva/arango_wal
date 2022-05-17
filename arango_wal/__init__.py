@@ -6,6 +6,8 @@ Subscribe to Write-Ahead-Log changes on an ArangoDB database.
 
 import json
 import logging
+import signal
+import sys
 import time
 from sched import scheduler
 from threading import Timer
@@ -51,6 +53,8 @@ class ArangoWAL(EventEmitter):
         self._timer = None
         self._running = False
         self._wal = None
+        signal.signal(signal.SIGINT, self._exit_gracefully)
+        signal.signal(signal.SIGTERM, self._exit_gracefully)
         super().__init__()
 
     def connect(self, **kwargs) -> StandardDatabase:
@@ -111,3 +115,7 @@ class ArangoWAL(EventEmitter):
         operation = OPERATIONS.get(tick.get("type", ""), "unknown_operation")
         collection = data["_id"].split("/")[0] if data else None
         return collection, operation, data
+
+    def _exit_gracefully(self, _args):
+        self.stop()
+        sys.exit(0)
