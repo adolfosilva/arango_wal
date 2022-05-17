@@ -16,6 +16,7 @@ from typing import Callable
 from arango import ArangoClient
 from arango.database import StandardDatabase
 from pyee.base import EventEmitter, Handler
+from pyee.twisted import TwistedEventEmitter
 
 __version__ = "0.1.0"
 __all__ = ["ArangoWAL", "OPERATIONS", "POLLING_INTERVAL_SECS"]
@@ -43,7 +44,7 @@ OPERATIONS = {
 }
 
 
-class ArangoWAL(EventEmitter):
+class ArangoWAL(TwistedEventEmitter):
     """ArangoWAL allows subscribing to ArangoDB WAL events."""
 
     def __init__(self, host: str, polling_interval: int = POLLING_INTERVAL_SECS):

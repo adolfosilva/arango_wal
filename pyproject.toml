@@ -25,6 +25,7 @@ example_http_server = "examples.http_server:main"
 python = "^3.9"
 python-arango = "^7.3.4"
 pyee = "^9.0.4"
+Twisted = "^22.4.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1"
